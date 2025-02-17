@@ -1,4 +1,6 @@
 import express  from "express";
+import jwt from "jsonwebtoken"
+import { JWT_SECRET } from "./config";
 
 const app = express()
 
@@ -6,15 +8,25 @@ const app = express()
 
 // })
 
-app.post("/signin",(req,res)=>{
-
-})
-
 app.post("/signup",(req,res)=>{
     
 })
+app.post("/signin",(req,res)=>{
 
-app.post("/room",(req,res)=>{
+    const userId = 1;
+
+   const token =  jwt.sign({
+        userId
+    },JWT_SECRET)
+
+    res.json({
+        token
+    })
+    
+})
+
+
+app.post("/room",middleware,(req,res)=>{
     
 })
 
