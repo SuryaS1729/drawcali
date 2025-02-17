@@ -9,7 +9,8 @@ export function middleware(req: Request,res:Response,next:NextFunction){
 
    if(decoded){
     //@ts-ignore todo later on
-    req.userId= decoded.userId
+    req.userId= decoded.userId;
+    next()
 
    }else{
     res.status(403).json({
