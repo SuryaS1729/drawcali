@@ -15,10 +15,10 @@ datasource db {
 
 model User{
    id           String  @id @default(uuid())
-   email        String
+   email        String @unique
    password     String
    name         String
-   photo        String 
+   photo        String? 
    rooms        Room[]
    chats         Chat[]
 }
@@ -38,7 +38,7 @@ model Chat{
     userId      String
     roomId      Int
     room        Room    @relation(fields: [roomId], references: [id])
-    user        User  @relation(fields: [userId],references: [id])
+    user        User    @relation(fields: [userId],references: [id])
 
 
 
