@@ -80,8 +80,8 @@ app.post("/room",middleware,async(req,res)=>{
     }
     //@ts-ignore
     const userId = req.userId;
-
-    await prismaClient.room.create({
+try {
+    const room = await prismaClient.room.create({
         data:{
             slug:parsedData.data.name,
             adminId:userId
@@ -89,8 +89,14 @@ app.post("/room",middleware,async(req,res)=>{
         }
     })
     res.json({
-        roomId:123
+        roomId:room.id
     })
+} catch (error) {
+    res.status(411).json({
+        message:"same user cannot create same room name twice"
+    })
+}
+   
 })
 
 app.listen(3001)
