@@ -68,17 +68,26 @@ app.post("/signin",async(req,res)=>{
 })
 
 
-app.post("/room",middleware,(req,res)=>{
+app.post("/room",middleware,async(req,res)=>{
 
-    const data= CreateRoomSchema.safeParse(req.body);
+    const parsedData= CreateRoomSchema.safeParse(req.body);
     
-    if(!data.success){
+    if(!parsedData.success){
         res.json({
             message:"incorrect schema/inputs"
         })
         return
     }
-    //dbcall
+    //@ts-ignore
+    const userId = req.userId;
+
+    await prismaClient.room.create({
+        data:{
+            slug:parsedData.data.name,
+            adminId:userId
+
+        }
+    })
     res.json({
         roomId:123
     })
