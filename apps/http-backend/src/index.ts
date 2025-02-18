@@ -8,9 +8,7 @@ const app = express()
 app.use(express.json())
 
 app.post("/signup",async(req,res)=>{
-
     const parsedData= CreateUserSchema.safeParse(req.body);
-    
     if(!parsedData.success){
         console.log(parsedData.error)
         res.json({
@@ -19,42 +17,48 @@ app.post("/signup",async(req,res)=>{
         return
     }
     try {
-        await prismaClient.user.create({
-
+       const user= await prismaClient.user.create({
             data:{
-            
                     email:parsedData.data?.username,
                     password:parsedData.data.password,
                     name:parsedData.data.name
-                
-            }
-           
-        })
+            }})
         res.json({
-            userId:"124"
+            userId:user.id
         })
     } catch (error) {
         res.status(411).json({
             message:"user already exists"
-        })
-    }
+        })}})
+
+
+app.post("/signin",async(req,res)=>{
+    const parsedData= SignInSchema.safeParse(req.body);
     
-    
-})
-app.post("/signin",(req,res)=>{
-    const data= SignInSchema.safeParse(req.body);
-    
-    if(!data.success){
+    if(!parsedData.success){
         res.json({
             message:"incorrect schema/inputs"
         })
         return
     }
 
-    const userId = 1;
+    const user = await prismaClient.user.findFirst({
+        where:{
+            email:parsedData.data.username,
+            password:parsedData.data.password
+        }
 
-   const token =  jwt.sign({
-        userId
+    })
+
+    if(!user){
+        res.status(403).json({
+                        message:"not authorized"
+        })
+        return
+    }
+
+    const token =  jwt.sign({
+        userId: user?.id
     },JWT_SECRET)
 
     res.json({
