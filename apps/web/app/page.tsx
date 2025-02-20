@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 
 export default function Home() {
-  const [roomId,setRoomId]=useState("")
+  const [slug,setSlug]=useState("")
   const router= useRouter()
   return (
     <div style={{
@@ -19,12 +19,12 @@ export default function Home() {
       height:"100vh",
       width:"100vw"
     }}>
-      <input style={{padding:10}} value={roomId} onChange={(e)=>{
-        setRoomId(e.target.value)
+      <input style={{padding:10}} value={slug} onChange={(e)=>{
+        setSlug(e.target.value)
       }} type="text" placeholder="room id"></input>
 
       <button style={{padding:10}}  onClick={()=>{
-        router.push(`/room/${roomId}`)
+        router.push(`/room/${slug}`)
       }}>Join ROOm</button>
     </div>
   );
