@@ -14,10 +14,7 @@ export function ChatRoomClient({
     const {socket, loading}= useSocket()
     const [currentMessage,setCurrentMessage]=useState("")
 
-    useEffect(()=>{
-
-    })
-
+   
     useEffect(()=>{
 
         if(socket && !loading){
@@ -35,11 +32,12 @@ export function ChatRoomClient({
                 }
             }
         }
+        
     
 },[socket, loading, id])
 
  return <div>
-    {messages.map(m=><div>{m.message}</div>)}
+    {chats.map(m=><div>{m.message}</div>)}
 
     <input type="text" value = {currentMessage} onChange={(e)=>{
         setCurrentMessage(e.target.value)
