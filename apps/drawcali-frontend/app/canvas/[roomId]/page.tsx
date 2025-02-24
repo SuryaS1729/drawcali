@@ -10,8 +10,10 @@ export default function Canvas(){
         if(canvasRef.current){
             const canvas = canvasRef.current;
             const ctx = canvas.getContext("2d")
-
+            
             if(!ctx){return}
+            ctx.fillStyle="rgba(0,0,0)"
+            ctx.fillRect(0,0,canvas.width,canvas.height)
 
             let clicked = false;
             let startX = 0;
@@ -34,6 +36,9 @@ export default function Canvas(){
                     const width = e.clientX - startX;
                     const height = e.clientY - startY;
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle="rgba(0,0,0)"
+                    ctx.fillRect(0,0,canvas.width,canvas.height)
+                    ctx.strokeStyle="rgba(255,255,255)"
                     ctx.strokeRect(startX, startY, width, height);
                 }
             })            
@@ -42,7 +47,7 @@ export default function Canvas(){
     }, [canvasRef]);
 
     return <div>
-        <canvas ref={canvasRef} width={2000} height={2000}></canvas>
+        <canvas ref={canvasRef} width={2000} height={1250}></canvas>
     </div>
 }
 
