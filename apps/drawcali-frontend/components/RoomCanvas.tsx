@@ -30,6 +30,14 @@ export function RoomCanvas({roomId}:{roomId:string}){
 
     return <div>
       <Canvas roomId = {roomId} socket = {socket}/>
+      <div style={{
+        position:"fixed",
+        top:10,
+        left:10,
+        color:"white"
+      }}>
+        hi there
+      </div>
         
     </div>
 }
