@@ -10,6 +10,12 @@ type Shape = "circle" | "rect" | "pencil"
 export function Canvas({roomId, socket}:{roomId: string, socket: WebSocket}){
         const canvasRef = useRef<HTMLCanvasElement>(null);
         const [selectedTool, setSelectedTool]= useState<Shape>("circle")
+
+        useEffect(()=>{
+            //@ts-ignore
+            window.selectedTool = selectedTool
+        } , [selectedTool])
+
     useEffect(()=>{
         if(canvasRef.current){
            initDraw(canvasRef.current, roomId, socket)       

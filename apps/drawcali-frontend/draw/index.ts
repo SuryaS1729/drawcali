@@ -72,10 +72,23 @@ export async function initDraw(canvas:HTMLCanvasElement , roomId: string, socket
         if (clicked) {
             const width = e.clientX - startX;
             const height = e.clientY - startY;
-
-               clearCanvas(existingShapes,canvas,ctx)
+            clearCanvas(existingShapes,canvas,ctx)
             ctx.strokeStyle="rgba(255,255,255)"
-            ctx.strokeRect(startX,startY, width,height);
+            
+            //@ts-ignore
+            const selectedTool = window.selectedTool;
+            if(selectedTool === "rect"){
+                ctx.strokeRect(startX,startY, width,height);
+            } else if (selectedTool ==="circle"){
+                const centerX = startX + width/2;
+                const centerY = startY + height/2
+                const radius = Math.max(width, height)/2
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.closePath()
+            }
+        
            
          
         }
