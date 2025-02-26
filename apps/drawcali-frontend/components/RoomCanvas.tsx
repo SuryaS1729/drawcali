@@ -36,7 +36,7 @@ export function RoomCanvas({roomId}:{roomId:string}){
         left:10,
         color:"white"
       }}>
-        hi there
+
       </div>
         
     </div>
