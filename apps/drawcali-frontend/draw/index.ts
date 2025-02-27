@@ -16,6 +16,13 @@ type Shape={
     centerY:number,
     radius:number,
     
+}|
+{
+    type:"pencil",
+    startX:number,
+    startY:number,
+    endX:number,
+    endY:number,
 }
 
 export async function initDraw(canvas:HTMLCanvasElement , roomId: string, socket: WebSocket){
@@ -50,12 +57,31 @@ export async function initDraw(canvas:HTMLCanvasElement , roomId: string, socket
         clicked = false
         const width = e.clientX - startX;
         const height = e.clientY - startY;
-        const shape: Shape = {
+        //@ts-ignore
+        const selectedTool = window.selectedTool;
+        let shape: Shape | null = null
+        if(selectedTool==="rect"){
+            shape = {
+            //@ts-ignore
             type:"rect",
             x: startX,
             y:startY,
             width:width,
             height:height,
+        }
+
+        }if(selectedTool === "circle"){
+            const radius = Math.max(width, height)/2
+            shape = {
+                type:"circle",
+                centerX: startX + radius,
+                centerY:startY + radius,
+                radius:Math.max(width, height)/2,
+            }
+            
+        }
+        if(!shape){
+            return
         }
         existingShapes.push(shape);
 
@@ -80,9 +106,10 @@ export async function initDraw(canvas:HTMLCanvasElement , roomId: string, socket
             if(selectedTool === "rect"){
                 ctx.strokeRect(startX,startY, width,height);
             } else if (selectedTool ==="circle"){
-                const centerX = startX + width/2;
-                const centerY = startY + height/2
-                const radius = Math.max(width, height)/2
+                const radius = Math.abs(Math.max(width, height)/2)
+                const centerX = startX + radius;
+                const centerY = startY + radius
+                
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                 ctx.stroke();
@@ -105,6 +132,14 @@ function clearCanvas(existingShapes:Shape[], canvas:HTMLCanvasElement,ctx: Canva
                
             ctx.strokeStyle="rgba(255,255,255)"
             ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+        }else if(shape.type ==="circle"){
+            
+
+                ctx.beginPath();
+                ctx.arc(shape.centerX, shape.centerY, shape.radius, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.closePath()
+
         }
     })
 }
