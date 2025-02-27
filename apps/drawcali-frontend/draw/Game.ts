@@ -1,3 +1,4 @@
+import { Tool } from "@/components/Canvas";
 import { getExistingShapes } from "./http";
 
 type Shape={
@@ -33,7 +34,7 @@ export class Game{
     private clicked: boolean;
     private startX=0;
     private startY=0;
-    private selectedTool = "circle"
+    private selectedTool: Tool = "circle"
 
     constructor(canvas: HTMLCanvasElement, roomId:string, socket: WebSocket){
         this.canvas = canvas;
@@ -47,13 +48,14 @@ export class Game{
         this.initMouseHandlers();
     }
 
-    setShape(tool: "circle"|"rect"|"pencil"){
+    setTool(tool: "circle"|"rect"|"pencil"){
         this.selectedTool = tool;
 
     }
 
    async init(){
         this.existingShapes = await getExistingShapes( this.roomId );
+        this.clearCanvas()
     }
     initHandlers(){
         this.socket.onmessage = (event) => {
@@ -79,7 +81,7 @@ export class Game{
                
    
                    this.ctx.beginPath();
-                   this.ctx.arc(shape.centerX, shape.centerY, shape.radius, 0, 2 * Math.PI);
+                   this.ctx.arc(shape.centerX, shape.centerY, Math.abs(shape.radius), 0, 2 * Math.PI);
                    this.ctx.stroke();
                    this.ctx.closePath()
    
@@ -99,7 +101,7 @@ export class Game{
             const width = e.clientX - this.startX;
             const height = e.clientY - this.startY;
             //@ts-ignore
-            const selectedTool = window.selectedTool;
+            const selectedTool = this.selectedTool;
             let shape: Shape | null = null
             if(selectedTool==="rect"){
                 shape = {
@@ -143,16 +145,16 @@ export class Game{
                 this.ctx.strokeStyle="rgba(255,255,255)"
                 
                 //@ts-ignore
-                const selectedTool = window.selectedTool;
+                const selectedTool = this.selectedTool;
                 if(selectedTool === "rect"){
                     this.ctx.strokeRect(this.startX,this.startY, width,height);
                 } else if (selectedTool ==="circle"){
-                    const radius = Math.abs(Math.max(width, height)/2)
+                    const radius = Math.max(width, height)/2
                     const centerX = this.startX + radius;
                     const centerY = this.startY + radius
                     
                     this.ctx.beginPath();
-                    this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                    this.ctx.arc(centerX, centerY, Math.abs(radius), 0, 2 * Math.PI);
                     this.ctx.stroke();
                     this.ctx.closePath()
                 }

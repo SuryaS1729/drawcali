@@ -3,22 +3,25 @@ import { useRef, useState } from "react";
 import { useEffect } from "react";
 import { IconButton } from "./IconButton";
 import { Circle, Pencil, RectangleHorizontal } from "lucide-react";
+import { Game } from "@/draw/Game";
 
 
-type Shape = "circle" | "rect" | "pencil"
+export type Tool = "circle" | "rect" | "pencil"
 
 export function Canvas({roomId, socket}:{roomId: string, socket: WebSocket}){
         const canvasRef = useRef<HTMLCanvasElement>(null);
-        const [selectedTool, setSelectedTool]= useState<Shape>("circle")
+        const [game,setGame ]= useState<Game>()
+        const [selectedTool, setSelectedTool]= useState<Tool>("circle")
 
         useEffect(()=>{
             //@ts-ignore
-            window.selectedTool = selectedTool
+            game?.setTool(selectedTool)
         } , [selectedTool])
 
     useEffect(()=>{
         if(canvasRef.current){
-           initDraw(canvasRef.current, roomId, socket)       
+            const g = new Game(canvasRef.current, roomId, socket)
+           setGame(g)      
         }
 
     }, [canvasRef]);
@@ -36,8 +39,8 @@ export function Canvas({roomId, socket}:{roomId: string, socket: WebSocket}){
 }
 
 function TopBar({selectedTool, setSelectedTool}:{
-    selectedTool: Shape,
-    setSelectedTool: (tool: Shape)=>void
+    selectedTool: Tool,
+    setSelectedTool: (tool: Tool)=>void
 }){
     return  <div style={{
         position: "fixed",
