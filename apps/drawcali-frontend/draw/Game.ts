@@ -29,7 +29,11 @@ export class Game{
     private ctx: CanvasRenderingContext2D   
     private existingShapes: Shape[];
     private roomId : string
-     socket : WebSocket
+    private socket : WebSocket;
+    private clicked: boolean;
+    private startX=0;
+    private startY=0;
+    private selectedTool = "circle"
 
     constructor(canvas: HTMLCanvasElement, roomId:string, socket: WebSocket){
         this.canvas = canvas;
@@ -37,8 +41,15 @@ export class Game{
         this.existingShapes = []
         this.roomId= roomId
         this.socket = socket
+        this.clicked = false
         this.init();
         this.initHandlers();
+        this.initMouseHandlers();
+    }
+
+    setShape(tool: "circle"|"rect"|"pencil"){
+        this.selectedTool = tool;
+
     }
 
    async init(){
@@ -75,4 +86,84 @@ export class Game{
            }
        })
     }
+
+    initMouseHandlers(){
+        this.canvas.addEventListener("mousedown", (e) => {
+            this.clicked = true
+            this.startX = e.clientX
+            this.startY = e.clientY
+        })
+
+        this.canvas.addEventListener("mouseup", (e) => {
+            this.clicked = false
+            const width = e.clientX - this.startX;
+            const height = e.clientY - this.startY;
+            //@ts-ignore
+            const selectedTool = window.selectedTool;
+            let shape: Shape | null = null
+            if(selectedTool==="rect"){
+                shape = {
+                //@ts-ignore
+                type:"rect",
+                x: this.startX,
+                y:this.startY,
+                width:width,
+                height:height,
+            }
+    
+            }if(selectedTool === "circle"){
+                const radius = Math.max(width, height)/2
+                shape = {
+                    type:"circle",
+                    centerX: this.startX + radius,
+                    centerY:this.startY + radius,
+                    radius:Math.max(width, height)/2,
+                }
+                
+            }
+            if(!shape){
+                return
+            }
+            this.existingShapes.push(shape);
+    
+            this.socket.send(JSON.stringify({
+                type:"chat",
+                message:JSON.stringify(
+                    shape
+                ),
+                roomId: this.roomId
+            }))
+        })   
+        
+        this.canvas.addEventListener("mousemove", (e) => {
+            if (this.clicked) {
+                const width = e.clientX - this.startX;
+                const height = e.clientY - this.startY;
+                this.clearCanvas()
+                this.ctx.strokeStyle="rgba(255,255,255)"
+                
+                //@ts-ignore
+                const selectedTool = window.selectedTool;
+                if(selectedTool === "rect"){
+                    this.ctx.strokeRect(this.startX,this.startY, width,height);
+                } else if (selectedTool ==="circle"){
+                    const radius = Math.abs(Math.max(width, height)/2)
+                    const centerX = this.startX + radius;
+                    const centerY = this.startY + radius
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                    this.ctx.stroke();
+                    this.ctx.closePath()
+                }
+            
+               
+             
+            }
+        })     
+    
+    }
+
+
+
 }
