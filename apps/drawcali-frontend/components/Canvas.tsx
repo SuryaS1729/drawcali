@@ -21,9 +21,15 @@ export function Canvas({roomId, socket}:{roomId: string, socket: WebSocket}){
     useEffect(()=>{
         if(canvasRef.current){
             const g = new Game(canvasRef.current, roomId, socket)
-           setGame(g)      
+           setGame(g)  
+           
+           return ()=>{
+            g.destroy();
         }
 
+        }
+
+        
     }, [canvasRef]);
 
    return <div style={{
